@@ -1,0 +1,42 @@
+---
+title: "machineLearning"
+author: "Jonas Roettger"
+date: "2023-06-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Loading necessary libraries
+.libPaths("C:/Users/U711123/Documents/R_libraries")
+library(caret)
+library(randomForest)
+
+# Import data
+training <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", na.strings=c("NA","#DIV/0!",""))
+testing <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", na.strings=c("NA","#DIV/0!",""))
+
+# Clean the data by removing columns with NA values
+training <- training[, colSums(is.na(training)) == 0]
+testing <- testing[, colSums(is.na(testing)) == 0]
+
+# Remove first 7 columns as they are not predictors
+training <- training[, -c(1:7)]
+testing <- testing[, -c(1:7)]
+
+# Set up cross-validation
+fitControl <- trainControl(method="cv", number=10)
+
+# Train the model
+model <- train(classe ~ ., data=training, method="rf", trControl=fitControl)
+
+# Make predictions
+predictions <- predict(model, newdata=testing)
+
+# Print out predictions
+print(predictions)
+
+```
